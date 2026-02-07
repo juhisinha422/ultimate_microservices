@@ -1,91 +1,13 @@
-# ================= EMAIL SERVICE =================
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: emailservice
-spec:
-  selector:
-    matchLabels:
-      app: emailservice
-  template:
-    metadata:
-      labels:
-        app: emailservice
-    spec:
-      containers:
-      - name: server
-        image: juhisinha/emailservice:latest
-        ports:
-        - containerPort: 8080
-        env:
-        - name: PORT
-          value: "8080"
-        readinessProbe:
-          exec:
-            command: ["/bin/grpc_health_probe", "-addr=:8080"]
-        livenessProbe:
-          exec:
-            command: ["/bin/grpc_health_probe", "-addr=:8080"]
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: emailservice
-spec:
-  selector:
-    app: emailservice
-  ports:
-  - port: 5000
-    targetPort: 8080
-
-# ================= CHECKOUT =================
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: checkoutservice
-spec:
-  selector:
-    matchLabels:
-      app: checkoutservice
-  template:
-    metadata:
-      labels:
-        app: checkoutservice
-    spec:
-      containers:
-      - name: server
-        image: juhisinha/checkoutservice:latest
-        ports:
-        - containerPort: 5050
-        env:
-        - name: PORT
-          value: "5050"
-        readinessProbe:
-          exec:
-            command: ["/bin/grpc_health_probe", "-addr=:5050"]
-        livenessProbe:
-          exec:
-            command: ["/bin/grpc_health_probe", "-addr=:5050"]
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: checkoutservice
-spec:
-  selector:
-    app: checkoutservice
-  ports:
-  - port: 5050
-    targetPort: 5050
-
-# ================= FRONTEND (FIXED) =================
----
+##################################
+# FRONTEND
+##################################
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: frontend
+  namespace: webapps
 spec:
+  replicas: 1
   selector:
     matchLabels:
       app: frontend
@@ -100,24 +22,34 @@ spec:
         ports:
         - containerPort: 8080
 
-        readinessProbe:
-          initialDelaySeconds: 15
-          exec:
-            command: ["/bin/grpc_health_probe", "-addr=:8080"]
-
-        livenessProbe:
-          initialDelaySeconds: 15
-          exec:
-            command: ["/bin/grpc_health_probe", "-addr=:8080"]
-
         env:
         - name: PORT
           value: "8080"
+
+        - name: PRODUCT_CATALOG_SERVICE_ADDR
+          value: "productcatalogservice:3550"
+
+        - name: CART_SERVICE_ADDR
+          value: "cartservice:7070"
+
+        - name: CURRENCY_SERVICE_ADDR
+          value: "currencyservice:7000"
+
+        - name: CHECKOUT_SERVICE_ADDR
+          value: "checkoutservice:5050"
+
+        - name: SHIPPING_SERVICE_ADDR
+          value: "shippingservice:50051"
+
+        - name: AD_SERVICE_ADDR
+          value: "adservice:9555"
+
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: frontend
+  namespace: webapps
 spec:
   type: LoadBalancer
   selector:
@@ -126,13 +58,82 @@ spec:
   - port: 80
     targetPort: 8080
 
-# ================= CART =================
+
+##################################
+# CHECKOUT SERVICE
+##################################
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: checkoutservice
+  namespace: webapps
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: checkoutservice
+  template:
+    metadata:
+      labels:
+        app: checkoutservice
+    spec:
+      containers:
+      - name: server
+        image: juhisinha/checkoutservice:latest
+        ports:
+        - containerPort: 5050
+
+        env:
+        - name: PORT
+          value: "5050"
+
+        - name: PRODUCT_CATALOG_SERVICE_ADDR
+          value: "productcatalogservice:3550"
+
+        - name: CART_SERVICE_ADDR
+          value: "cartservice:7070"
+
+        - name: PAYMENT_SERVICE_ADDR
+          value: "paymentservice:50051"
+
+        - name: SHIPPING_SERVICE_ADDR
+          value: "shippingservice:50051"
+
+        - name: EMAIL_SERVICE_ADDR
+          value: "emailservice:5000"
+
+        - name: CURRENCY_SERVICE_ADDR
+          value: "currencyservice:7000"
+
+        - name: AD_SERVICE_ADDR
+          value: "adservice:9555"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: checkoutservice
+  namespace: webapps
+spec:
+  selector:
+    app: checkoutservice
+  ports:
+  - port: 5050
+    targetPort: 5050
+
+
+##################################
+# CART SERVICE
+##################################
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: cartservice
+  namespace: webapps
 spec:
+  replicas: 1
   selector:
     matchLabels:
       app: cartservice
@@ -146,20 +147,17 @@ spec:
         image: juhisinha/cartservice:latest
         ports:
         - containerPort: 7070
+
         env:
         - name: REDIS_ADDR
           value: "redis-cart:6379"
-        readinessProbe:
-          exec:
-            command: ["/bin/grpc_health_probe", "-addr=:7070"]
-        livenessProbe:
-          exec:
-            command: ["/bin/grpc_health_probe", "-addr=:7070"]
+
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: cartservice
+  namespace: webapps
 spec:
   selector:
     app: cartservice
@@ -167,13 +165,57 @@ spec:
   - port: 7070
     targetPort: 7070
 
-# ================= REDIS =================
+
+##################################
+# PRODUCT CATALOG
+##################################
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: productcatalogservice
+  namespace: webapps
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: productcatalogservice
+  template:
+    metadata:
+      labels:
+        app: productcatalogservice
+    spec:
+      containers:
+      - name: server
+        image: juhisinha/productcatalogservice:latest
+        ports:
+        - containerPort: 3550
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: productcatalogservice
+  namespace: webapps
+spec:
+  selector:
+    app: productcatalogservice
+  ports:
+  - port: 3550
+    targetPort: 3550
+
+
+##################################
+# REDIS
+##################################
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: redis-cart
+  namespace: webapps
 spec:
+  replicas: 1
   selector:
     matchLabels:
       app: redis-cart
@@ -184,14 +226,16 @@ spec:
     spec:
       containers:
       - name: redis
-        image: redis:alpine
+        image: redis:7
         ports:
         - containerPort: 6379
+
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: redis-cart
+  namespace: webapps
 spec:
   selector:
     app: redis-cart
