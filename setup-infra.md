@@ -61,20 +61,20 @@ eksctl version
 ## Create EKS CLUSTER
 
 ```bash
-eksctl create cluster --name=Vikash-EKS \
-                      --region=us-west-2 \
-                      --zones=us-west-2a,us-west-2b \
+eksctl create cluster --name=Juhi-EKS \
+                      --region=us-east-1 \
+                      --zones=us-east-1a,us-east-1b \
                       --without-nodegroup
 
 eksctl utils associate-iam-oidc-provider \
-    --region us-west-2 \
-    --cluster Vikash-EKS \
+    --region us-east-1 \
+    --cluster Juhi-EKS \
     --approve
 
-eksctl create nodegroup --cluster=Vikash-EKS \
-                       --region=us-west-2 \
+eksctl create nodegroup --cluster=Juhi-EKS \
+                       --region=us-east-1 \
                        --name=node2 \
-                       --node-type=t3.medium \
+                       --node-type=t3.small \
                        --nodes=3 \
                        --nodes-min=2 \
                        --nodes-max=4 \
