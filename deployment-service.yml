@@ -44,6 +44,9 @@ spec:
         - name: AD_SERVICE_ADDR
           value: "adservice:9555"
 
+        - name: RECOMMENDATION_SERVICE_ADDR
+          value: "recommendationservice:8080"
+
 ---
 apiVersion: v1
 kind: Service
