@@ -1,22 +1,27 @@
 pipeline {
     agent any
 
+    environment {
+        IMAGE = "juhisinha/currencyservice:latest"
+    }
+
     stages {
-        stage('Build & Tag Docker Image') {
+
+        stage('Build Docker Image') {
             steps {
                 script {
                     withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
-                        sh "docker build -t juhisinha/currencyservice:latest ."
+                        sh "docker build -t ${IMAGE} ."
                     }
                 }
             }
         }
-        
+
         stage('Push Docker Image') {
             steps {
                 script {
                     withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
-                        sh "docker push juhisnha/currencyservice:latest "
+                        sh "docker push ${IMAGE}"
                     }
                 }
             }
