@@ -1473,4 +1473,6 @@ For questions or support, please open an issue in the GitHub repository.
 
 **Note**: This is a demonstration project. For production deployments, additional security hardening, monitoring, and high availability configurations are recommended.
 
+<img width="1600" height="850" alt="image" src="https://github.com/user-attachments/assets/1404a6a9-e810-4250-9173-080b955a6c81" />
+
 <img width="1902" height="957" alt="Image" src="https://github.com/user-attachments/assets/4f73aead-627e-4db8-9372-e30c94d1e3c2" />
