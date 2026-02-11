@@ -9,9 +9,13 @@ This project demonstrates end-to-end DevOps implementation including containeriz
 ##  Technologies Used
 
 * Docker
+
 * Kubernetes (K8s)
+
 * Jenkins
+
 * Git & Webhooks
+
 * Docker Registry
 
 ---
@@ -19,13 +23,21 @@ This project demonstrates end-to-end DevOps implementation including containeriz
 ## Project Implementation
 
 ✔ Dockerized all 11 microservices
+
 ✔ Created and maintained separate Dockerfiles
+
 ✔ Built and tagged Docker images
+
 ✔ Pushed images to container registry
+
 ✔ Configured Jenkins pipeline for automated build & deployment
+
 ✔ Integrated Git Webhooks for auto-triggered CI/CD
+
 ✔ Deployed all services on Kubernetes cluster
+
 ✔ Managed Pods, Services, and Deployments
+
 ✔ Implemented rolling updates for zero-downtime deployment
 
 ---
