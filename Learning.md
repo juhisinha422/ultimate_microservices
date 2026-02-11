@@ -44,6 +44,7 @@ This project demonstrates end-to-end DevOps implementation including containeriz
 
 ## CI/CD Workflow
 
+```bash
 Code Push
 → Webhook Trigger
 → Jenkins Pipeline Execution
@@ -51,6 +52,7 @@ Code Push
 → Push to Registry
 → Kubernetes Deployment Update
 → Rolling Update of Pods
+```
 
 Fully automated deployment with no manual intervention.
 
